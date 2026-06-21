@@ -8,8 +8,10 @@ namespace DZ_8
         static void Main()
         {
 
-            GuessNumber game = new GuessNumber();
-            game.StartGame();
+            GuessNumber game = new GuessNumber(player: Player.Machine);
+            // game.StartGamePlayer();
+            // game.StartGameIA();
+            game.Star();
             //     Complex c1 = new Complex(1, 1);
             //     Complex c2 = new Complex(1, 2);
 
