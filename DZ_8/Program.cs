@@ -7,11 +7,14 @@ namespace DZ_8
     {
         static void Main()
         {
+            TicTacToe game = new TicTacToe();
 
-            GuessNumber game = new GuessNumber(player: Player.Machine);
-            // game.StartGamePlayer();
-            // game.StartGameIA();
-            game.Star();
+            game.Start();
+
+            // GuessNumber game = new GuessNumber(player: Player.Machine);
+            // game.Star();
+
+
             //     Complex c1 = new Complex(1, 1);
             //     Complex c2 = new Complex(1, 2);
 
