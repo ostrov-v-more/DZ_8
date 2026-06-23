@@ -61,10 +61,6 @@ public class TicTacToe
         return number;
     }
 
-    // public bool CheckReSetFild()
-    // {
-    //     if ()
-    // }
 
     public bool WinCombinate()
     {
