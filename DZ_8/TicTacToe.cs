@@ -7,22 +7,34 @@ public class TicTacToe
     public List<char> gameFild = new List<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8' };
     private int number;
     private bool isWinCombinate = false;
+    private bool isEmptyFild = true;
 
 
     public void Start()
     {
+        var queueX = new LimitedQueue<int>(3);
+        var queueY = new LimitedQueue<int>(3);
+
         while (!isWinCombinate)
         {
             Console.Write("Введите число куда поставить 'X'");
             ShowFild();
             number = EnterNumber();
             SetFildX(number);
+            if (queueX.TryEnqueue(number, out int evictedX))
+            {
+                SetFildNumber(evictedX);
+            }
             ShowFild();
             isWinCombinate = WinCombinate();
             if (isWinCombinate) break;
-            Console.Write("Введите число куда поставить 'O'");
+            Console.Write("Введите число куда поставить 'Y'");
             number = EnterNumber();
-            SetFildO(number);
+            if (queueY.TryEnqueue(number, out int evictedY))
+            {
+                SetFildNumber(evictedY);
+            }
+            SetFildY(number);
             ShowFild();
             isWinCombinate = WinCombinate();
             if (isWinCombinate) break;
@@ -35,9 +47,45 @@ public class TicTacToe
         gameFild[number] = 'X';
     }
 
-        public void SetFildO(int number)
+    public void SetFildY(int number)
     {
-        gameFild[number] = 'O';
+        gameFild[number] = 'Y';
+    }
+
+    public void SetFildNumber(int number)
+    {
+        char letter = number.ToString()[0];
+        gameFild[number] = letter;
+    }
+
+    public class LimitedQueue<T>
+    {
+        private readonly Queue<T> _queue = new Queue<T>();
+        private readonly int _limit;
+
+        public LimitedQueue(int limit)
+        {
+            _limit = limit > 0 ? limit : throw new ArgumentException("Лимит должен быть больше 0.");
+        }
+
+        /// <returns>True, если элемент был вытеснен; иначе False.</returns>
+        public bool TryEnqueue(T item, out T? evictedItem)
+        {
+            if (_queue.Count >= _limit)
+            {
+                evictedItem = _queue.Dequeue();
+                _queue.Enqueue(item);
+                return true;
+            }
+
+            evictedItem = default;
+            _queue.Enqueue(item);
+            return false;
+        }
+
+        public T Dequeue() => _queue.Dequeue();
+        public int Count => _queue.Count;
+        public IEnumerable<T> GetItems() => _queue;
     }
 
     public void ShowFild()
@@ -49,16 +97,38 @@ public class TicTacToe
     }
 
 
-        public int EnterNumber()
+    public int EnterNumber()
     {
         var input = Console.ReadLine();
 
-        while (!int.TryParse(input, out number) || number < 0  || number > 8)
+        while (!int.TryParse(input, out number) || number < 0  || number > 8 || !CheckEmptyFild(number))
         {
-            Console.Write("Ошибка! Введите корректное целое число от 0 до 8: ");
+            if (!int.TryParse(input, out number))
+            {
+                Console.Write("Ошибка! Введено не число: ");
+            }
+            if ( number < 0  || number > 8 )
+            {
+                Console.Write("Ошибка! Число должно быть от 1 до 8: ");
+            }
+            if (!CheckEmptyFild(number))
+            {
+                Console.Write("Ошибка! Ячейка уже занята: ");
+            }
             input = Console.ReadLine();
         }
         return number;
+    }
+
+    public bool CheckEmptyFild(int number)
+    {
+        if (gameFild[number] != 'X' && gameFild[number] != 'Y')
+        {
+           isEmptyFild = true; 
+        }
+        else  isEmptyFild = false;
+        
+        return isEmptyFild;
     }
 
 
