@@ -7,7 +7,6 @@ public class TicTacToe
     public List<char> gameFild = new List<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8' };
     private int number;
     private bool isWinCombinate = false;
-    private bool isEmptyFild = true;
 
 
     public void Start()
@@ -20,14 +19,15 @@ public class TicTacToe
             Console.Write("Введите число куда поставить 'X'");
             ShowFild();
             number = EnterNumber();
-            SetFildX(number);
             if (queueX.TryEnqueue(number, out int evictedX))
             {
                 SetFildNumber(evictedX);
             }
+            SetFildX(number);
             ShowFild();
             isWinCombinate = WinCombinate();
             if (isWinCombinate) break;
+            
             Console.Write("Введите число куда поставить 'Y'");
             number = EnterNumber();
             if (queueY.TryEnqueue(number, out int evictedY))
@@ -83,52 +83,60 @@ public class TicTacToe
             return false;
         }
 
-        public T Dequeue() => _queue.Dequeue();
-        public int Count => _queue.Count;
-        public IEnumerable<T> GetItems() => _queue;
     }
 
     public void ShowFild()
     {
-        Console.Write($"Игровое поле:\n");   
+        Console.Write("Игровое поле:\n");   
         Console.Write($"[{gameFild[0]}][{gameFild[1]}][{gameFild[2]}]\n");   
         Console.Write($"[{gameFild[3]}][{gameFild[4]}][{gameFild[5]}]\n");   
         Console.Write($"[{gameFild[6]}][{gameFild[7]}][{gameFild[8]}]\n");   
     }
 
 
-    public int EnterNumber()
+    private int EnterNumber()
     {
-        var input = Console.ReadLine();
-
-        while (!int.TryParse(input, out number) || number < 0  || number > 8 || !CheckEmptyFild(number))
+        while (true)
         {
-            if (!int.TryParse(input, out number))
+            Console.Write("Введите номер ячейки (0-8): ");
+            string? input = Console.ReadLine();
+
+            if (!int.TryParse(input, out int parsedNumber))
             {
-                Console.Write("Ошибка! Введено не число: ");
+                Console.WriteLine("Ошибка! Введено не число.");
+                continue;
             }
-            if ( number < 0  || number > 8 )
+
+            if (parsedNumber < 0 || parsedNumber > 8)
             {
-                Console.Write("Ошибка! Число должно быть от 1 до 8: ");
+                Console.WriteLine("Ошибка! Число должно быть в диапазоне от 0 до 8.");
+                continue;
             }
-            if (!CheckEmptyFild(number))
+
+            if (!IsCellEmpty(parsedNumber))
             {
-                Console.Write("Ошибка! Ячейка уже занята: ");
+                Console.WriteLine("Ошибка! Ячейка уже занята.");
+                continue;
             }
-            input = Console.ReadLine();
+
+            return parsedNumber;
         }
-        return number;
     }
 
-    public bool CheckEmptyFild(int number)
-    {
-        if (gameFild[number] != 'X' && gameFild[number] != 'Y')
-        {
-           isEmptyFild = true; 
-        }
-        else  isEmptyFild = false;
+    // public bool CheckEmptyFild(int number)
+    // {
+    //     if (gameFild[number] != 'X' && gameFild[number] != 'Y')
+    //     {
+    //        isEmptyFild = true; 
+    //     }
+    //     else  isEmptyFild = false;
         
-        return isEmptyFild;
+    //     return isEmptyFild;
+    // }
+
+    private bool IsCellEmpty(int index)
+    {
+        return gameFild[index] != 'X' && gameFild[index] != 'Y';
     }
 
 
